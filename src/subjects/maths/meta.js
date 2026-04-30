@@ -1,0 +1,45 @@
+export default {
+  id:     'maths',
+  name:   'Maths',
+  colour: '#EF9F27',
+  bg:     '#FAEEDA',
+  icon:   '🔢',
+  path:   '/maths',
+  topics: [
+    {
+      id:        'clock',
+      name:      'Telling the Time',
+      desc:      'Drag the clock hands to set the time',
+      path:      '/maths/clock',
+      component: () => import('./topics/clock/ClockGame'),
+    },
+    {
+      id:        'addition',
+      name:      'Addition & Subtraction',
+      desc:      'Practice adding and subtracting numbers',
+      path:      '/maths/addition',
+      component: () => import('./topics/addition/AdditionGame'),
+    },
+    {
+      id:        'multiply',
+      name:      'Multiplication',
+      desc:      'Learn your times tables',
+      path:      '/maths/multiply',
+      component: () => import('./topics/multiply/MultiplyGame'),
+    },
+    {
+      id:        'fractions',
+      name:      'Fractions',
+      desc:      'Explore halves, quarters, and more',
+      path:      '/maths/fractions',
+      component: () => import('./topics/fractions/FractionsGame'),
+    },
+    {
+      id:        'shapes',
+      name:      'Shapes',
+      desc:      'Identify and sort 2D and 3D shapes',
+      path:      '/maths/shapes',
+      component: () => import('./topics/shapes/ShapesGame'),
+    },
+  ],
+}

@@ -155,7 +155,8 @@ function DigitalDisplay({ hours, minutes }) {
 export default function ClockGame() {
   // total minutes in the 12-hour cycle (0–719)
   const [tm, setTm] = useState(0);
-  const [busy, setBusy]   = useState(false);
+  const [busy, setBusy]       = useState(false);
+  const [targetHour, setTargetHour] = useState(1);
   const dragRef = useRef(null);   // 'm' | 'h' | null
   const svgRef  = useRef(null);
   const rafRef  = useRef(null);
@@ -253,14 +254,9 @@ export default function ClockGame() {
   useEffect(() => () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); }, []);
 
   // ── preset buttons ────────────────────────────────────────────────────────
-  const preset = useCallback((mn) => {
+  const preset = useCallback((newTm) => {
     if (busy) return;
-    setTm((prev) => clamp(Math.floor(prev / 60) * 60 + mn));
-  }, [busy]);
-
-  const setHour = useCallback((h) => {
-    if (busy) return;
-    setTm((prev) => clamp(h * 60 + (prev % 60)));
+    setTm(clamp(newTm));
   }, [busy]);
 
   // ── render ────────────────────────────────────────────────────────────────
@@ -284,21 +280,21 @@ export default function ClockGame() {
 
           {/* row 1: hour picker + presets */}
           <div style={styles.row}>
+            <div style={styles.quarterCol}>
+              <BigButton onClick={() => preset(targetHour * 60 + 15)}                    disabled={busy} variant="blue"  style={styles.quarterBtn}>quarter past</BigButton>
+              <BigButton onClick={() => preset(((targetHour - 1 + 12) % 12) * 60 + 45)} disabled={busy} variant="blue"  style={styles.quarterBtn}>quarter to</BigButton>
+            </div>
             <select
-              value={hours}
+              value={targetHour}
               disabled={busy}
-              onChange={(e) => setHour(Number(e.target.value))}
+              onChange={(e) => setTargetHour(Number(e.target.value))}
               style={styles.select}
             >
               {[...Array(12)].map((_, i) => (
                 <option key={i} value={i}>{i === 0 ? 12 : i}</option>
               ))}
             </select>
-            <div style={styles.presetCol}>
-              <BigButton onClick={() => preset(0)}  disabled={busy} variant="amber" style={styles.presetBtn}>o'clock</BigButton>
-              <BigButton onClick={() => preset(15)} disabled={busy} variant="blue"  style={styles.presetBtn}>quarter past</BigButton>
-              <BigButton onClick={() => preset(45)} disabled={busy} variant="blue"  style={styles.presetBtn}>quarter to</BigButton>
-            </div>
+            <BigButton onClick={() => preset(targetHour * 60)} disabled={busy} variant="amber" style={styles.oclockBtn}>o'clock</BigButton>
           </div>
 
           <div style={styles.sep} />
@@ -391,7 +387,7 @@ const styles = {
     color: '#aaa',
     lineHeight: 1,
     flexShrink: 0,
-    width: 18,
+    width: 36,
     textAlign: 'center',
     fontFamily: 'monospace',
   },
@@ -429,9 +425,9 @@ const styles = {
     background: '#e5e5e5',
   },
   select: {
-    width: 138,
-    flexShrink: 0,
-    padding: '0 8px',
+    flex: 1,
+    height: 90,
+    padding: '0 4px',
     borderRadius: 14,
     fontSize: 52,
     fontWeight: 700,
@@ -443,16 +439,24 @@ const styles = {
     cursor: 'pointer',
     textAlign: 'center',
   },
-  presetCol: {
+  quarterCol: {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
     gap: 6,
   },
-  presetBtn: {
-    width: '100%',
-    padding: '0 20px',
+  quarterBtn: {
+    padding: '0 16px',
     height: 42,
+    minHeight: 0,
+    minWidth: 0,
+    boxSizing: 'border-box',
+    fontSize: 14,
+    whiteSpace: 'nowrap',
+  },
+  oclockBtn: {
+    flex: 1,
+    height: 90,
     minHeight: 0,
     minWidth: 0,
     boxSizing: 'border-box',
